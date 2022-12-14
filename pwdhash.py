@@ -111,6 +111,11 @@ def pwdhash2(domain, password):
 def main():
     parser = argparse.ArgumentParser(description='Computes a PwdHash.')
     parser.add_argument('domain', help='the domain or uri of the site')
+    #TODO: Add parameter to select pwdhash or pwdhash2
+    #TODO: Add parameter to specify salt
+    #TODO: Add parameter to specify iterations
+    #TODO: Add parameter to copy pwd?
+    #TODO: Allow password from stdin?
     parser.add_argument('-n', action='store_true',
                         help='do not print the trailing newline')
     args = parser.parse_args()
@@ -122,4 +127,5 @@ def main():
     print(pwdhash2(domain, password), end='' if args.n else '\n')
 
 if __name__ == '__main__':
+    #TODO: Add tests
     main()
