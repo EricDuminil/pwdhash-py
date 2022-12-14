@@ -116,6 +116,7 @@ def main():
     #TODO: Add parameter to specify iterations
     #TODO: Add parameter to copy pwd?
     #TODO: Allow password from stdin?
+    #TODO: Let output disappear once it's been displayed
     parser.add_argument('-n', action='store_true',
                         help='do not print the trailing newline')
     args = parser.parse_args()
