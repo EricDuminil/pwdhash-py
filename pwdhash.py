@@ -1,9 +1,9 @@
 #! /usr/bin/env python3
 
 import hmac
-import pbkdf2
 import base64
 import getpass
+import hashlib
 import string
 import re
 import argparse
@@ -98,14 +98,13 @@ def pwdhash2(domain, password):
     salt = os.getenv(PWDHASH2_SALT_ENV)
     if salt is None:
         raise Exception(f'Please define {PWDHASH2_SALT_ENV} environment variable.')
-    print(salt)
-    iterations = os.getenv(PWDHASH2_ITERATIONS_ENV, 50000)
-    print(iterations)
-    domain = domain.encode('utf-8')
-    password = password.encode('utf-8')
-    digest = hmac.new(password, domain, 'md5').digest()
-    b64digest = base64.b64encode(digest).decode("utf-8")[:-2]  # remove padding
+    iterations = int(os.getenv(PWDHASH2_ITERATIONS_ENV, 50000))
+    #domain = domain.encode('utf-8')
+    # password = password.encode('utf-8')
+    #digest = hmac.new(password, domain, 'md5').digest()
     size = len(PREFIX) + len(password)
+    digest = hashlib.pbkdf2_hmac("sha256", (password+salt).encode(), domain.encode(), iterations, (size * 2 // 3) + 16)
+    b64digest = base64.b64encode(digest).decode("ascii")[:-2]  # remove padding
     return apply_constraints(b64digest, size, password.isalnum())
 
 
@@ -116,7 +115,7 @@ def main():
                         help='do not print the trailing newline')
     args = parser.parse_args()
     domain = extract_domain(args.domain)
-    password = "p4ssw0rd"
+    password = getpass.getpass()
     # pwdhash  : I5NIYEaLhN for google.com
     # pwdhash2 : O5CW5DfvNS for google.com
 
