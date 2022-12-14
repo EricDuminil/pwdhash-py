@@ -6,8 +6,11 @@ import getpass
 import string
 import re
 import argparse
+import os
 
 PREFIX = '@@'
+PWDHASH2_SALT_ENV = 'PWDHASH2_SALT'
+PWDHASH2_ITERATIONS_ENV = 'PWDHASH2_ITERATIONS'
 DUALTLDS = [
     'ab.ca', 'ac.ac', 'ac.at', 'ac.be', 'ac.cn', 'ac.il', 'ac.in', 'ac.jp',
     'ac.kr', 'ac.nz', 'ac.th', 'ac.uk', 'ac.za', 'adm.br', 'adv.br', 'agro.pl',
@@ -90,7 +93,13 @@ def apply_constraints(digest, size, alnum=False):
     return str_ROL(result, ord(extras.pop()) if extras else 0)
 
 
-def pwdhash(domain, password):
+def pwdhash2(domain, password):
+    salt = os.getenv(PWDHASH2_SALT_ENV)
+    if salt is None:
+        raise Exception(f'Please define {PWDHASH2_SALT_ENV} environment variable.')
+    print(salt)
+    iterations = os.getenv(PWDHASH2_ITERATIONS_ENV, 50000)
+    print(iterations)
     domain = domain.encode('utf-8')
     password = password.encode('utf-8')
     digest = hmac.new(password, domain, 'md5').digest()
@@ -106,8 +115,8 @@ def main():
                         help='do not print the trailing newline')
     args = parser.parse_args()
     domain = extract_domain(args.domain)
-    password = getpass.getpass()
-    print(pwdhash(domain, password), end='' if args.n else '\n')
+    password = "p4ssw0rd"
+    print(pwdhash2(domain, password), end='' if args.n else '\n')
 
 if __name__ == '__main__':
     main()
