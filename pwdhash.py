@@ -126,6 +126,9 @@ def main():
     # pwdhash2 : O5CW5DfvNS for google.com
 
     print(pwdhash2(domain, password), end='' if args.n else '\n')
+    input("Press ENTER to clear the screen...")
+    # Clear the screen
+    print("\033[H\033[3J", end="")
 
 if __name__ == '__main__':
     #TODO: Add tests
