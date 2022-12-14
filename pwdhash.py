@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 
 import hmac
+import pbkdf2
 import base64
 import getpass
 import string
@@ -116,6 +117,9 @@ def main():
     args = parser.parse_args()
     domain = extract_domain(args.domain)
     password = "p4ssw0rd"
+    # pwdhash  : I5NIYEaLhN for google.com
+    # pwdhash2 : O5CW5DfvNS for google.com
+
     print(pwdhash2(domain, password), end='' if args.n else '\n')
 
 if __name__ == '__main__':
