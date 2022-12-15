@@ -55,6 +55,7 @@ class TestPwdHash2(unittest.TestCase):
                              f'Hash for "{pwd}" on {url} ({salt}, *{iterations}) should be "{expected}".')
 
     def test_pwdhash2_collisions(self):
+        # Use a longer password!
         tests = [
           ['foo', 1000, 'bar', 'https://manifolds.org', 'https://boxwoods.com'],
           ['foo', 50_000, 'aYcErTYgi0AoB2tDbP80fwR5GAWwUvg8', 'http://dainty.co.uk', 'http://polemic.com'],
@@ -63,6 +64,20 @@ class TestPwdHash2(unittest.TestCase):
         for pwd, iterations, salt, url1, url2 in tests:
             self.assertEqual(pwdhash.pwdhash2(pwdhash.extract_domain(url1), pwd, iterations, salt),
                 pwdhash.pwdhash2(pwdhash.extract_domain(url2), pwd, iterations, salt))
+
+    def test_pwdhash2_edge_cases(self):
+        # For testing only! Please always define salt and password. Number of iterations shouldn't be too low and password should be long enough.
+        # Not sure those are useful:
+        tests = [
+          ['WWNEC9x1', 'foobar', 1000, '', 'https://google.com'],
+          ['EBr2', '', 1000, '', 'https://google.com'],
+          ['w0WD', '', 1, '', 'https://google.com'],
+          ['w0WD', '', 0, '', 'https://google.com'],
+          ['w0WD', '', -1, '', 'https://google.com'],
+        ]
+        for expected, pwd, iterations, salt, url in tests:
+            self.assertEqual(pwdhash.pwdhash2(pwdhash.extract_domain(url), pwd, iterations, salt), expected,
+                             f'Hash for "{pwd}" on {url} ({salt}, *{iterations}) should be "{expected}".')
 
 
 class TestPwdHashCLI(unittest.TestCase):
@@ -78,6 +93,12 @@ class TestPwdHashCLI(unittest.TestCase):
             '--stdin', 'https://maps.google.com', stdin='test'), 'IeTLK1\n')
         self.assertEqual(self.call_cli(
             '--stdin', '-n', 'google.com', stdin='test'), 'IeTLK1')
+
+    def test_cli_pwdhash2(self):
+        self.assertEqual(self.call_cli(
+            '--stdin', '-v', '2', '--iter', '1000', '--salt', 'ChangeMe', 'https://maps.google.com', stdin='foobar'), 'APC8mNJI\n')
+        self.assertEqual(self.call_cli(
+            '--stdin', '-v', '2', '--iter', '99_999', '--salt', 'SuperSalt', '-n', 'github.io', stdin='p4ssw0rd'), '43DV2JBzXL')
 
     def test_cli_pwdhash_to_clipboard(self):
         import pyperclip
