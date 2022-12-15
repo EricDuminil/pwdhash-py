@@ -42,6 +42,30 @@ class TestPwdHash(unittest.TestCase):
             self.assertEqual(pwdhash.pwdhash(pwdhash.extract_domain(url), pwd), result,
                              f'Hash for "{pwd}" on {url} should be "{result}".')
 
+class TestPwdHash2(unittest.TestCase):
+    def test_pwdhash2_with_urls(self):
+        # expected results calculated with https://gwuk.github.io/PwdHash2/pwdhash2/
+        tests = [['5YrAI', 'foo', 10000, 'SomeSalt', 'https://www.skype.com/en/'],
+          ['r8oIM4CR', 'foobar', 1, 'ChangeMe', 'https://google.com'],
+          ['3PvCifzNoYaTNBMcJzVvDfDBeVK', 'correcthorsebatterystaple', 50000, 'COVwVNWVhwCsd7vlQ2T5BuIJBccYCu1RzR8rQFVHYVkGVQkZXHLkglnttWFQJYIN', 'https://about.google/intl/en/?fg=1&utm_source=google-EN&utm_medium=referral&utm_campaign=hp-header'],
+          ['APC8mNJI', 'foobar', 1000, 'ChangeMe', 'https://google.com'],
+        ]
+        for expected, pwd, iterations, salt, url in tests:
+            self.assertEqual(pwdhash.pwdhash2(pwdhash.extract_domain(url), pwd, iterations, salt), expected,
+                             f'Hash for "{pwd}" on {url} ({salt}, *{iterations}) should be "{expected}".')
+
+    def test_pwdhash2_collisions(self):
+        tests = [
+          ['foo', 1000, 'bar', 'https://manifolds.org', 'https://boxwoods.com'],
+          ['foo', 50_000, 'aYcErTYgi0AoB2tDbP80fwR5GAWwUvg8', 'http://dainty.co.uk', 'http://polemic.com'],
+          ['foobar', 100, 'salt', 'https://abounds.edu.au', 'https://coaxed.co.nz'],
+        ]
+        for pwd, iterations, salt, url1, url2 in tests:
+            self.assertEqual(pwdhash.pwdhash2(pwdhash.extract_domain(url1), pwd, iterations, salt),
+                pwdhash.pwdhash2(pwdhash.extract_domain(url2), pwd, iterations, salt))
+
+
+class TestPwdHashCLI(unittest.TestCase):
     def call_cli(self, *args, stdin):
         fake_stdout = StringIO()
         with redirect_stdout(fake_stdout):
