@@ -94,14 +94,13 @@ def apply_constraints(digest, size, alnum=False):
             result = re.sub(r'\W', c, result, count=1)
     return str_ROL(result, ord(extras.pop()) if extras else 0)
 
-def pwdhash2(domain, password):
-    salt = os.getenv(PWDHASH2_SALT_ENV)
+def pwdhash2(domain, password, iterations=None, salt=None):
+    salt = os.getenv(PWDHASH2_SALT_ENV, salt)
     if salt is None:
-        raise Exception(f'Please define {PWDHASH2_SALT_ENV} environment variable.')
-    iterations = int(os.getenv(PWDHASH2_ITERATIONS_ENV, 50000))
-    #domain = domain.encode('utf-8')
-    # password = password.encode('utf-8')
-    #digest = hmac.new(password, domain, 'md5').digest()
+        raise Exception(f'Please define {PWDHASH2_SALT_ENV} environment variable, or specify --salt.')
+    iterations = os.getenv(PWDHASH2_ITERATIONS_ENV, iterations)
+    if iterations is None:
+        raise Exception(f'Please define {PWDHASH2_ITERATIONS_ENV} environment variable, or specify --iterations.')
     size = len(PREFIX) + len(password)
     digest = hashlib.pbkdf2_hmac("sha256", (password+salt).encode(), domain.encode(), iterations, (size * 2 // 3) + 16)
     b64digest = base64.b64encode(digest).decode("ascii")[:-2]  # remove padding
@@ -121,10 +120,9 @@ def main():
     parser.add_argument('-v', '--version', type=int, choices=[1, 2], default=1, help='Use PwdHash 1 or 2. Default is 1')
     parser.add_argument('-s', '--stdin', action='store_true', help='Get password from stdin instead of prompt. Default is prompt')
     parser.add_argument('-c', '--copy', action='store_true', help='Copy hash to clipboard instead of displaying it. Default is display')
-    #TODO: Add parameter to specify salt
-    #TODO: Add parameter to specify iterations
-    parser.add_argument('-n', action='store_true',
-                        help='Do not print the trailing newline')
+    parser.add_argument('--iterations', type=int, help='How many iterations (for PwdHash 2)')
+    parser.add_argument('--salt', type=str, help='Salt (for PwdHash 2)')
+    parser.add_argument('-n', action='store_true', help='Do not print the trailing newline')
     args = parser.parse_args()
     hash_function = [None, pwdhash, pwdhash2][args.version]
     domain = extract_domain(args.domain)
