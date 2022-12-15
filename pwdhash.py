@@ -71,8 +71,10 @@ def extract_domain(uri):
 
 
 def apply_constraints(digest, size, alnum=False):
-    result = digest[:size-4]  # leave room for some extra characters
-    extras = list(reversed(digest[size-4:]))
+    # leave room for some extra characters
+    start_size = max(size - 4, 0)
+    result = digest[:start_size]
+    extras = list(reversed(digest[start_size:]))
 
     def cond_add_extra(f, candidates):
         n = ord(extras.pop()) if extras else 0
@@ -106,7 +108,7 @@ def pwdhash2(domain, password, iterations=None, salt=None):
     digest = hashlib.pbkdf2_hmac(
         "sha256", (password+salt).encode(), domain.encode(), iterations, (size * 2 // 3) + 16)
     b64digest = base64.b64encode(digest).decode("ascii")[:-2]  # remove padding
-    return apply_constraints(b64digest, size, password.isalnum())
+    return apply_constraints(b64digest, size, not password or password.isalnum())
 
 
 def pwdhash(domain, password):
@@ -115,7 +117,7 @@ def pwdhash(domain, password):
     digest = hmac.new(password, domain, 'md5').digest()
     b64digest = base64.b64encode(digest).decode("utf-8")[:-2]  # remove padding
     size = len(PREFIX) + len(password)
-    return apply_constraints(b64digest, size, password.isalnum())
+    return apply_constraints(b64digest, size, not password or password.isalnum())
 
 
 def main(cli_args):

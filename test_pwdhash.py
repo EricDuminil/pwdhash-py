@@ -72,8 +72,6 @@ class TestPwdHash2(unittest.TestCase):
           ['WWNEC9x1', 'foobar', 1000, '', 'https://google.com'],
           ['EBr2', '', 1000, '', 'https://google.com'],
           ['w0WD', '', 1, '', 'https://google.com'],
-          ['w0WD', '', 0, '', 'https://google.com'],
-          ['w0WD', '', -1, '', 'https://google.com'],
         ]
         for expected, pwd, iterations, salt, url in tests:
             self.assertEqual(pwdhash.pwdhash2(pwdhash.extract_domain(url), pwd, iterations, salt), expected,
