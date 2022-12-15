@@ -8,6 +8,7 @@ import string
 import re
 import argparse
 import os
+import sys
 
 PREFIX = '@@'
 PWDHASH2_SALT_ENV = 'PWDHASH2_SALT'
@@ -117,18 +118,23 @@ def pwdhash(domain, password):
 def main():
     parser = argparse.ArgumentParser(description='Computes a PwdHash.')
     parser.add_argument('domain', help='the domain or uri of the site')
-    parser.add_argument('--version', '-v', type=int, choices=[1, 2], default=1)
+    parser.add_argument('--version', '-v', type=int, choices=[1, 2], default=1, help='Use PwdHash 1 or 2. Default is 1')
+    parser.add_argument('--stdin', '-s', action='store_true', help='Get password from stdin instead of prompt. Default is False')
     #TODO: Add parameter to specify salt
     #TODO: Add parameter to specify iterations
     #TODO: Add parameter to copy pwd?
     #TODO: Allow password from stdin?
     #TODO: Let output disappear once it's been displayed
     parser.add_argument('-n', action='store_true',
-                        help='do not print the trailing newline')
+                        help='Do not print the trailing newline')
     args = parser.parse_args()
     hash_function = [None, pwdhash, pwdhash2][args.version]
     domain = extract_domain(args.domain)
-    password = getpass.getpass()
+
+    if args.stdin:
+        password = sys.stdin.readline().strip()
+    else:
+        password = getpass.getpass()
     # pwdhash  : I5NIYEaLhN for google.com
     # pwdhash2 : O5CW5DfvNS for google.com
 
