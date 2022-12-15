@@ -118,7 +118,7 @@ def pwdhash(domain, password):
     return apply_constraints(b64digest, size, password.isalnum())
 
 
-def main():
+def main(cli_args):
     parser = argparse.ArgumentParser(
         description='Computes PwdHash1 or PwdHash2.')
     parser.add_argument('domain', help='the domain or uri of the site')
@@ -134,7 +134,7 @@ def main():
                         default=os.getenv(PWDHASH2_ITERATIONS_ENV))
     parser.add_argument('-n', action='store_true',
                         help='Do not print the trailing newline')
-    args = parser.parse_args()
+    args = parser.parse_args(cli_args)
 
     domain = extract_domain(args.domain)
 
@@ -160,4 +160,4 @@ def main():
 
 if __name__ == '__main__':
     # TODO: Add tests
-    main()
+    main(sys.argv[1:])

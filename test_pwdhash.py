@@ -1,5 +1,8 @@
 import unittest
 import pwdhash
+from io import StringIO
+from unittest.mock import patch
+from contextlib import redirect_stdout
 
 
 class TestPwdHash(unittest.TestCase):
@@ -19,6 +22,19 @@ class TestPwdHash(unittest.TestCase):
         for url, pwd, result in tests:
             self.assertEqual(pwdhash.pwdhash(pwdhash.extract_domain(url), pwd), result,
                              f'Hash for "{pwd}" on {url} should be "{result}".')
+
+    def call_cli(self, *args, stdin):
+        fake_stdout = StringIO()
+        with redirect_stdout(fake_stdout):
+            with patch('sys.stdin', StringIO(stdin)):
+                pwdhash.main(args)
+        return fake_stdout.getvalue()
+
+
+    def test_cli(self):
+        self.assertEqual(self.call_cli('--stdin', 'google.com', stdin='test'), 'IeTLK1\n')
+        self.assertEqual(self.call_cli('--stdin', '-n', 'google.com', stdin='test'), 'IeTLK1')
+
 
 if __name__ == '__main__':
     unittest.main()
