@@ -159,5 +159,4 @@ def main(cli_args):
 
 
 if __name__ == '__main__':
-    # TODO: Add tests
     main(sys.argv[1:])
