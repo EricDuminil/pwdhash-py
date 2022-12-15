@@ -94,15 +94,20 @@ def apply_constraints(digest, size, alnum=False):
             result = re.sub(r'\W', c, result, count=1)
     return str_ROL(result, ord(extras.pop()) if extras else 0)
 
+
 def pwdhash2(domain, password, iterations=None, salt=None):
     if salt is None:
-        raise Exception(f'Please define {PWDHASH2_SALT_ENV} environment variable, or specify --salt.')
+        raise Exception(
+            f'Please define {PWDHASH2_SALT_ENV} environment variable, or specify --salt.')
     if iterations is None:
-        raise Exception(f'Please define {PWDHASH2_ITERATIONS_ENV} environment variable, or specify --iterations.')
+        raise Exception(
+            f'Please define {PWDHASH2_ITERATIONS_ENV} environment variable, or specify --iterations.')
     size = len(PREFIX) + len(password)
-    digest = hashlib.pbkdf2_hmac("sha256", (password+salt).encode(), domain.encode(), iterations, (size * 2 // 3) + 16)
+    digest = hashlib.pbkdf2_hmac(
+        "sha256", (password+salt).encode(), domain.encode(), iterations, (size * 2 // 3) + 16)
     b64digest = base64.b64encode(digest).decode("ascii")[:-2]  # remove padding
     return apply_constraints(b64digest, size, password.isalnum())
+
 
 def pwdhash(domain, password):
     domain = domain.encode('utf-8')
@@ -112,15 +117,23 @@ def pwdhash(domain, password):
     size = len(PREFIX) + len(password)
     return apply_constraints(b64digest, size, password.isalnum())
 
+
 def main():
-    parser = argparse.ArgumentParser(description='Computes PwdHash1 or PwdHash2.')
+    parser = argparse.ArgumentParser(
+        description='Computes PwdHash1 or PwdHash2.')
     parser.add_argument('domain', help='the domain or uri of the site')
-    parser.add_argument('-v', '--version', type=int, choices=[1, 2], default=1, help='Use PwdHash 1 or 2. Default is 1')
-    parser.add_argument('-s', '--stdin', action='store_true', help='Get password from stdin instead of prompt. Default is prompt')
-    parser.add_argument('-c', '--copy', action='store_true', help='Copy hash to clipboard instead of displaying it. Default is display')
-    parser.add_argument('--salt', type=str, help='Salt (for PwdHash 2)', default=os.getenv(PWDHASH2_SALT_ENV))
-    parser.add_argument('--iterations', type=int, help='How many iterations (for PwdHash 2)', default=os.getenv(PWDHASH2_ITERATIONS_ENV))
-    parser.add_argument('-n', action='store_true', help='Do not print the trailing newline')
+    parser.add_argument('-v', '--version', type=int,
+                        choices=[1, 2], default=1, help='Use PwdHash 1 or 2. Default is 1')
+    parser.add_argument('-s', '--stdin', action='store_true',
+                        help='Get password from stdin instead of prompt. Default is prompt')
+    parser.add_argument('-c', '--copy', action='store_true',
+                        help='Copy hash to clipboard instead of displaying it. Default is display')
+    parser.add_argument('--salt', type=str, help='Salt (for PwdHash 2)',
+                        default=os.getenv(PWDHASH2_SALT_ENV))
+    parser.add_argument('--iterations', type=int, help='How many iterations (for PwdHash 2)',
+                        default=os.getenv(PWDHASH2_ITERATIONS_ENV))
+    parser.add_argument('-n', action='store_true',
+                        help='Do not print the trailing newline')
     args = parser.parse_args()
 
     domain = extract_domain(args.domain)
@@ -144,6 +157,7 @@ def main():
     else:
         print(result, end='' if args.n else '\n')
 
+
 if __name__ == '__main__':
-    #TODO: Add tests
+    # TODO: Add tests
     main()
