@@ -95,10 +95,8 @@ def apply_constraints(digest, size, alnum=False):
     return str_ROL(result, ord(extras.pop()) if extras else 0)
 
 def pwdhash2(domain, password, iterations=None, salt=None):
-    salt = os.getenv(PWDHASH2_SALT_ENV, salt)
     if salt is None:
         raise Exception(f'Please define {PWDHASH2_SALT_ENV} environment variable, or specify --salt.')
-    iterations = os.getenv(PWDHASH2_ITERATIONS_ENV, iterations)
     if iterations is None:
         raise Exception(f'Please define {PWDHASH2_ITERATIONS_ENV} environment variable, or specify --iterations.')
     size = len(PREFIX) + len(password)
@@ -120,11 +118,11 @@ def main():
     parser.add_argument('-v', '--version', type=int, choices=[1, 2], default=1, help='Use PwdHash 1 or 2. Default is 1')
     parser.add_argument('-s', '--stdin', action='store_true', help='Get password from stdin instead of prompt. Default is prompt')
     parser.add_argument('-c', '--copy', action='store_true', help='Copy hash to clipboard instead of displaying it. Default is display')
-    parser.add_argument('--iterations', type=int, help='How many iterations (for PwdHash 2)')
-    parser.add_argument('--salt', type=str, help='Salt (for PwdHash 2)')
+    parser.add_argument('--salt', type=str, help='Salt (for PwdHash 2)', default=os.getenv(PWDHASH2_SALT_ENV))
+    parser.add_argument('--iterations', type=int, help='How many iterations (for PwdHash 2)', default=os.getenv(PWDHASH2_ITERATIONS_ENV))
     parser.add_argument('-n', action='store_true', help='Do not print the trailing newline')
     args = parser.parse_args()
-    hash_function = [None, pwdhash, pwdhash2][args.version]
+
     domain = extract_domain(args.domain)
 
     if args.stdin:
@@ -132,7 +130,10 @@ def main():
     else:
         password = getpass.getpass()
 
-    result = hash_function(domain, password)
+    if args.version == 1:
+        result = pwdhash(domain, password)
+    else:
+        result = pwdhash2(domain, password, args.iterations, args.salt)
 
     if args.copy:
         try:
