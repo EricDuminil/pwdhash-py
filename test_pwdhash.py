@@ -31,9 +31,15 @@ class TestPwdHash(unittest.TestCase):
         return fake_stdout.getvalue()
 
 
-    def test_cli(self):
-        self.assertEqual(self.call_cli('--stdin', 'google.com', stdin='test'), 'IeTLK1\n')
+    def test_cli_pwdhash(self):
+        self.assertEqual(self.call_cli('--stdin', 'https://maps.google.com', stdin='test'), 'IeTLK1\n')
         self.assertEqual(self.call_cli('--stdin', '-n', 'google.com', stdin='test'), 'IeTLK1')
+
+    def test_cli_pwdhash_to_clipboard(self):
+        import pyperclip
+        pyperclip.copy('wrong')
+        self.assertEqual(self.call_cli('--stdin', '-c', 'google.com', stdin='12345'), '')
+        self.assertEqual(pyperclip.paste(), 'lVOiR3j')
 
 
 if __name__ == '__main__':
