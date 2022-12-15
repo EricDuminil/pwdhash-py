@@ -93,7 +93,6 @@ def apply_constraints(digest, size, alnum=False):
             result = re.sub(r'\W', c, result, count=1)
     return str_ROL(result, ord(extras.pop()) if extras else 0)
 
-
 def pwdhash2(domain, password):
     salt = os.getenv(PWDHASH2_SALT_ENV)
     if salt is None:
@@ -107,11 +106,18 @@ def pwdhash2(domain, password):
     b64digest = base64.b64encode(digest).decode("ascii")[:-2]  # remove padding
     return apply_constraints(b64digest, size, password.isalnum())
 
+def pwdhash(domain, password):
+    domain = domain.encode('utf-8')
+    password = password.encode('utf-8')
+    digest = hmac.new(password, domain, 'md5').digest()
+    b64digest = base64.b64encode(digest).decode("utf-8")[:-2]  # remove padding
+    size = len(PREFIX) + len(password)
+    return apply_constraints(b64digest, size, password.isalnum())
 
 def main():
     parser = argparse.ArgumentParser(description='Computes a PwdHash.')
     parser.add_argument('domain', help='the domain or uri of the site')
-    #TODO: Add parameter to select pwdhash or pwdhash2
+    parser.add_argument('--version', '-v', type=int, choices=[1, 2], default=1)
     #TODO: Add parameter to specify salt
     #TODO: Add parameter to specify iterations
     #TODO: Add parameter to copy pwd?
@@ -120,15 +126,16 @@ def main():
     parser.add_argument('-n', action='store_true',
                         help='do not print the trailing newline')
     args = parser.parse_args()
+    hash_function = [None, pwdhash, pwdhash2][args.version]
     domain = extract_domain(args.domain)
     password = getpass.getpass()
     # pwdhash  : I5NIYEaLhN for google.com
     # pwdhash2 : O5CW5DfvNS for google.com
 
-    print(pwdhash2(domain, password), end='' if args.n else '\n')
-    input("Press ENTER to clear the screen...")
+    print(hash_function(domain, password), end='' if args.n else '\n')
+    # input("Press ENTER to clear the screen...")
     # Clear the screen
-    print("\033[H\033[3J", end="")
+    # print("\033[H\033[3J", end="")
 
 if __name__ == '__main__':
     #TODO: Add tests
