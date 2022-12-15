@@ -116,15 +116,13 @@ def pwdhash(domain, password):
     return apply_constraints(b64digest, size, password.isalnum())
 
 def main():
-    parser = argparse.ArgumentParser(description='Computes a PwdHash.')
+    parser = argparse.ArgumentParser(description='Computes PwdHash1 or PwdHash2.')
     parser.add_argument('domain', help='the domain or uri of the site')
     parser.add_argument('-v', '--version', type=int, choices=[1, 2], default=1, help='Use PwdHash 1 or 2. Default is 1')
-    parser.add_argument('-s', '--stdin', action='store_true', help='Get password from stdin instead of prompt. Default is False')
+    parser.add_argument('-s', '--stdin', action='store_true', help='Get password from stdin instead of prompt. Default is prompt')
+    parser.add_argument('-c', '--copy', action='store_true', help='Copy hash to clipboard instead of displaying it. Default is display')
     #TODO: Add parameter to specify salt
     #TODO: Add parameter to specify iterations
-    #TODO: Add parameter to copy pwd?
-    #TODO: Allow password from stdin?
-    #TODO: Let output disappear once it's been displayed
     parser.add_argument('-n', action='store_true',
                         help='Do not print the trailing newline')
     args = parser.parse_args()
@@ -135,13 +133,17 @@ def main():
         password = sys.stdin.readline().strip()
     else:
         password = getpass.getpass()
-    # pwdhash  : I5NIYEaLhN for google.com
-    # pwdhash2 : O5CW5DfvNS for google.com
 
-    print(hash_function(domain, password), end='' if args.n else '\n')
-    # input("Press ENTER to clear the screen...")
-    # Clear the screen
-    # print("\033[H\033[3J", end="")
+    result = hash_function(domain, password)
+
+    if args.copy:
+        try:
+            import pyperclip
+            pyperclip.copy(result)
+        except ModuleNotFoundError:
+            print('ERROR: Please install pyperclip')
+    else:
+        print(result, end='' if args.n else '\n')
 
 if __name__ == '__main__':
     #TODO: Add tests
