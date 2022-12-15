@@ -59,7 +59,7 @@ def str_ROL(s, n):
 
 
 def extract_domain(uri):
-    host = re.sub('https?:\/\/', '', uri)
+    host = re.sub(r'https?:\/\/', '', uri)
     host = host.split('/')[0]
     host = host.split('.')
     if len(host) >= 3 and '.'.join(host[-2:]) in DUALTLDS:
@@ -83,14 +83,14 @@ def apply_constraints(digest, size, alnum=False):
     result += cond_add_extra(str.isupper, string.ascii_uppercase)
     result += cond_add_extra(str.islower, string.ascii_lowercase)
     result += cond_add_extra(str.isdigit, string.digits)
-    if re.search('\W', result) and not alnum:
+    if re.search(r'\W', result) and not alnum:
         result += extras.pop() if extras else chr(0)
     else:
         result += '+'
     if alnum:
-        while re.search('\W', result):
+        while re.search(r'\W', result):
             c = cond_add_extra(lambda x: False, string.ascii_uppercase)
-            result = re.sub('\W', c, result, count=1)
+            result = re.sub(r'\W', c, result, count=1)
     return str_ROL(result, ord(extras.pop()) if extras else 0)
 
 
