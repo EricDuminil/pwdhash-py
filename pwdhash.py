@@ -118,8 +118,8 @@ def pwdhash(domain, password):
 def main():
     parser = argparse.ArgumentParser(description='Computes a PwdHash.')
     parser.add_argument('domain', help='the domain or uri of the site')
-    parser.add_argument('--version', '-v', type=int, choices=[1, 2], default=1, help='Use PwdHash 1 or 2. Default is 1')
-    parser.add_argument('--stdin', '-s', action='store_true', help='Get password from stdin instead of prompt. Default is False')
+    parser.add_argument('-v', '--version', type=int, choices=[1, 2], default=1, help='Use PwdHash 1 or 2. Default is 1')
+    parser.add_argument('-s', '--stdin', action='store_true', help='Get password from stdin instead of prompt. Default is False')
     #TODO: Add parameter to specify salt
     #TODO: Add parameter to specify iterations
     #TODO: Add parameter to copy pwd?
