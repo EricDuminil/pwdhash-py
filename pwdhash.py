@@ -154,8 +154,8 @@ def main(cli_args):
         try:
             import pyperclip
             pyperclip.copy(result)
-        except ModuleNotFoundError:
-            print('ERROR: Please install pyperclip')
+        except ImportError:
+            print("ERROR: Please install pyperclip. Password wasn't copied to clipboard.")
     else:
         print(result, end='' if args.n else '\n')
 
