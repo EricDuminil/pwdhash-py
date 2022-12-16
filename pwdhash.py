@@ -117,10 +117,11 @@ def pwdhash(domain, password):
 def _check_iterations_and_salt(iterations, salt):
     if salt is None:
         raise Exception(
-                'Please define {0!r} environment variable, or specify --salt.'.format(PWDHASH2_SALT_ENV))
+            'Please define {0!r} environment variable, or specify --salt.'.format(PWDHASH2_SALT_ENV))
     if iterations is None:
         raise Exception(
-                'Please define {0!r} environment variable, or specify --iterations.'.format(PWDHASH2_ITERATIONS_ENV))
+            'Please define {0!r} environment variable, or specify --iterations.'.format(PWDHASH2_ITERATIONS_ENV))
+
 
 def main(cli_args):
     parser = argparse.ArgumentParser(
