@@ -97,13 +97,7 @@ def apply_constraints(digest, size, alnum=False):
     return str_ROL(result, ord(extras.pop()) if extras else 0)
 
 
-def pwdhash2(domain, password, iterations=None, salt=None):
-    if salt is None:
-        raise Exception(
-                'Please define {0!r} environment variable, or specify --salt.'.format(PWDHASH2_SALT_ENV))
-    if iterations is None:
-        raise Exception(
-                'Please define {0!r} environment variable, or specify --iterations.'.format(PWDHASH2_ITERATIONS_ENV))
+def pwdhash2(domain, password, iterations, salt):
     size = len(PREFIX) + len(password)
     digest = hashlib.pbkdf2_hmac(
         "sha256", (password+salt).encode(), domain.encode(), iterations, (size * 2 // 3) + 16)
@@ -119,6 +113,14 @@ def pwdhash(domain, password):
     size = len(PREFIX) + len(password)
     return apply_constraints(b64digest, size, not password or password.isalnum())
 
+
+def _check_iterations_and_salt(iterations, salt):
+    if salt is None:
+        raise Exception(
+                'Please define {0!r} environment variable, or specify --salt.'.format(PWDHASH2_SALT_ENV))
+    if iterations is None:
+        raise Exception(
+                'Please define {0!r} environment variable, or specify --iterations.'.format(PWDHASH2_ITERATIONS_ENV))
 
 def main(cli_args):
     parser = argparse.ArgumentParser(
@@ -139,6 +141,9 @@ def main(cli_args):
     args = parser.parse_args(cli_args)
 
     domain = extract_domain(args.domain)
+
+    if args.version == 2:
+        _check_iterations_and_salt(args.iterations, args.salt)
 
     if args.stdin:
         password = sys.stdin.readline().strip()
