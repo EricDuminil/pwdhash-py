@@ -100,10 +100,10 @@ def apply_constraints(digest, size, alnum=False):
 def pwdhash2(domain, password, iterations=None, salt=None):
     if salt is None:
         raise Exception(
-            f'Please define {PWDHASH2_SALT_ENV} environment variable, or specify --salt.')
+                'Please define {0!r} environment variable, or specify --salt.'.format(PWDHASH2_SALT_ENV))
     if iterations is None:
         raise Exception(
-            f'Please define {PWDHASH2_ITERATIONS_ENV} environment variable, or specify --iterations.')
+                'Please define {0!r} environment variable, or specify --iterations.'.format(PWDHASH2_ITERATIONS_ENV))
     size = len(PREFIX) + len(password)
     digest = hashlib.pbkdf2_hmac(
         "sha256", (password+salt).encode(), domain.encode(), iterations, (size * 2 // 3) + 16)
