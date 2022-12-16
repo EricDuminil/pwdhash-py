@@ -109,11 +109,17 @@ class TestPwdHashCLI(unittest.TestCase):
             '43DV2JBzXL')
 
     def test_cli_pwdhash_to_clipboard(self):
-        import pyperclip
-        pyperclip.copy('wrong')
-        self.assertEqual(self.call_cli(
-            '--stdin', '-c', 'google.com', stdin='12345'), '')
-        self.assertEqual(pyperclip.paste(), 'lVOiR3j')
+        try:
+            import pyperclip
+            try:
+                pyperclip.copy('wrong')
+            except pyperclip.PyperclipException:
+                self.skipTest('pyperclip cannot copy to clipboard.')
+            self.assertEqual(self.call_cli(
+                '--stdin', '-c', 'google.com', stdin='12345'), '')
+            self.assertEqual(pyperclip.paste(), 'lVOiR3j')
+        except ImportError:
+            self.skipTest('pyperclip not available.')
 
 
 if __name__ == '__main__':
