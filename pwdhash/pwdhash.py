@@ -123,7 +123,7 @@ def _check_iterations_and_salt(iterations, salt):
             'Please define {0!r} environment variable, or specify --iterations.'.format(PWDHASH2_ITERATIONS_ENV))
 
 
-def main(cli_args):
+def cli(cli_args):
     parser = argparse.ArgumentParser(
         description='Computes PwdHash1 or PwdHash2.')
     parser.add_argument('domain', help='the domain or uri of the site')
@@ -167,4 +167,4 @@ def main(cli_args):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    cli(sys.argv[1:])

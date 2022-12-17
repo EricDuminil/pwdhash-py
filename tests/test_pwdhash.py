@@ -91,7 +91,7 @@ class TestPwdHashCLI(unittest.TestCase):
         fake_stdout = StringIO()
         with redirect_stdout(fake_stdout):
             with patch('sys.stdin', StringIO(stdin)):
-                pwdhash.main(args)
+                pwdhash.cli(args)
         return fake_stdout.getvalue()
 
     def test_cli_pwdhash(self):
