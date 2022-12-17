@@ -166,5 +166,8 @@ def cli(cli_args):
         print(result, end='' if args.n else '\n')
 
 
-if __name__ == '__main__':
+def main():
     cli(sys.argv[1:])
+
+if __name__ == '__main__':
+    main()
