@@ -16,7 +16,7 @@ If sources are available, the script can also be called with `python pwdhash.py`
 
 ```bash
 ❯ pwdhash -h
-usage: pwdhash.py [-h] [-v {1,2}] [-s] [-c] [--salt SALT] [--iterations ITERATIONS] [-n] domain
+usage: pwdhash [-h] [-v {1,2}] [-s] [-c] [--salt SALT] [--iterations ITERATIONS] [-n] domain
 
 Computes PwdHash1 or PwdHash2.
 
