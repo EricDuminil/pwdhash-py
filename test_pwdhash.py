@@ -27,6 +27,20 @@ class TestPwdHash(unittest.TestCase):
             self.assertEqual(pwdhash.pwdhash(domain, pwd), result,
                              f'Hash for "{pwd}" on {domain} should be "{result}".')
 
+    def test_pwdhash1_with_utf8(self):
+        # From https://pwdhash.github.io/website/
+        # https://github.com/abbot/pwdhash/pull/2
+        # Tests don't seem to fit with äöüäöü. Why?
+        tests = [
+            ('example.com', 'проверка', '0MeobH5tn/'),
+            # ('example.com', 'äöüäöü', 'JvK+mE0F'),
+            # ('example.com', 'cäf€ ábćḑè', 'y/XJe8W2rgnK'),
+
+        ]
+        for domain, pwd, result in tests:
+            self.assertEqual(pwdhash.pwdhash(domain, pwd), result,
+                             f'Hash for "{pwd}" on {domain} should be "{result}".')
+
     def test_pwdhash1_with_urls(self):
         # From https://pwdhash.github.io/website/
         tests = [

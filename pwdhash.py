@@ -97,7 +97,12 @@ def apply_constraints(digest, size, alnum=False):
     return str_ROL(result, ord(extras.pop()) if extras else 0)
 
 
+def project_to_ascii(s):
+    return "".join(chr(ord(x) & 0xff) for x in s)
+
+
 def pwdhash2(domain, password, iterations, salt):
+    #NOTE: What should be done with 'äöü' or 'проверка'?
     size = len(PREFIX) + len(password)
     digest = hashlib.pbkdf2_hmac(
         "sha256", (password+salt).encode(), domain.encode(), iterations, (size * 2 // 3) + 16)
@@ -107,7 +112,7 @@ def pwdhash2(domain, password, iterations, salt):
 
 def pwdhash(domain, password):
     domain = domain.encode('utf-8')
-    password = password.encode('utf-8')
+    password = project_to_ascii(password).encode('utf-8')
     digest = hmac.new(password, domain, 'md5').digest()
     b64digest = base64.b64encode(digest).decode("utf-8")[:-2]  # remove padding
     size = len(PREFIX) + len(password)
