@@ -120,3 +120,8 @@ If you define those variables inside your `.bashrc` or `.zshrc`, you don't need 
 7qErBOIB6R
 ```
 
+## Authors
+
+* Based on [Stanford PwdHash](https://pwdhash.github.io/website/)
+* [Joost Rijneveld](https://github.com/joostrijneveld), 2015
+* [Eric Duminil](https://github.com/EricDuminil), 2022
