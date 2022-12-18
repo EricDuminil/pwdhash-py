@@ -120,6 +120,42 @@ If you define those variables inside your `.bashrc` or `.zshrc`, you don't need 
 7qErBOIB6R
 ```
 
+## Call from Python script
+
+```python
+import pwdhash
+
+print(pwdhash.extract_domain('https://subdomain.example.com/folder'))
+# example.com
+
+print(pwdhash.pwdhash('example.com', 'p4ssw0rd'))
+# 4kydhtBD9M
+
+print(pwdhash.pwdhash2('example.com', 'p4ssw0rd', 50_000, 'ChangeMe'))
+# 7qErBOIB6R
+```
+
+## Tests
+
+```bash
+❯ pytest -v
+================================= test session starts ==================================
+collected 9 items
+
+test_pwdhash.py::TestPwdHash::test_empty_pwdhash PASSED                          [ 11%]
+test_pwdhash.py::TestPwdHash::test_pwdhash1_with_domains PASSED                  [ 22%]
+test_pwdhash.py::TestPwdHash::test_pwdhash1_with_urls PASSED                     [ 33%]
+test_pwdhash.py::TestPwdHash2::test_pwdhash2_collisions PASSED                   [ 44%]
+test_pwdhash.py::TestPwdHash2::test_pwdhash2_edge_cases PASSED                   [ 55%]
+test_pwdhash.py::TestPwdHash2::test_pwdhash2_with_urls PASSED                    [ 66%]
+test_pwdhash.py::TestPwdHashCLI::test_cli_pwdhash PASSED                         [ 77%]
+test_pwdhash.py::TestPwdHashCLI::test_cli_pwdhash2 PASSED                        [ 88%]
+test_pwdhash.py::TestPwdHashCLI::test_cli_pwdhash_to_clipboard PASSED            [100%]
+
+================================== 9 passed in 0.46s ===================================
+```
+
+
 ## Authors
 
 * Based on [Stanford PwdHash](https://pwdhash.github.io/website/)
