@@ -4,10 +4,18 @@ This is a Python implementation of [*PwdHash*](http://pwdhash.com/) and [*PwdHas
 
 It is function-equivalent to the original *PwdHash* browser add-on, as well as the updated version.
 
+## Installation
+
+`pip install pwdhash`
+
 ## Usage
 
+Once installed with pip, `pwdhash` command should be available in the PATH.
+
+If sources are available, the script can also be called with `python pwdhash.py` or `./pwdhash.py`.
+
 ```bash
-❯ ./pwdhash.py -h
+❯ pwdhash -h
 usage: pwdhash.py [-h] [-v {1,2}] [-s] [-c] [--salt SALT] [--iterations ITERATIONS] [-n] domain
 
 Computes PwdHash1 or PwdHash2.
@@ -32,7 +40,7 @@ optional arguments:
 Standard PwdHash is calculated by default. Domain name is required as an argument, and password is entered in a prompt, without being displayed :
 
 ```bash
-❯ python pwdhash.py example.com
+❯ pwdhash example.com
 Password: 
 4kydhtBD9M
 ```
@@ -42,7 +50,7 @@ Password:
 It's possible to get the password from standard input. It displays the password if entered by the user:
 
 ```bash
-❯ python pwdhash.py --stdin example.com
+❯ pwdhash --stdin example.com
 p4ssw0rd
 4kydhtBD9M
 ```
@@ -50,11 +58,11 @@ p4ssw0rd
 but it allows to get the password from a pipe or a file:
 
 ```bash
-❯ python pwdhash.py --stdin example.com < password
+❯ pwdhash --stdin example.com < password
 4kydhtBD9M
-❯ cat password | python pwdhash.py --stdin example.com
+❯ cat password | pwdhash --stdin example.com
 4kydhtBD9M
-❯ echo "p4ssw0rd" | python pwdhash.py --stdin example.com
+❯ echo "p4ssw0rd" | pwdhash --stdin example.com
 4kydhtBD9M
 ```
 
@@ -63,7 +71,7 @@ but it allows to get the password from a pipe or a file:
 It's possible to copy the password directly to the clipboard. It requires the [`pyperclip`](https://pypi.org/project/pyperclip/) module. The password isn't displayed at all.
 
 ```bash
-❯ ./pwdhash.py --stdin --copy example.com < password
+❯ pwdhash --stdin --copy example.com < password
 ```
 
 ### `-n`
@@ -71,28 +79,28 @@ It's possible to copy the password directly to the clipboard. It requires the [`
 Passwords can also be displayed without trailing newline:
 
 ```bash
-❯ ./pwdhash.py --stdin example.com -n < password
+❯ pwdhash --stdin example.com -n < password
 4kydhtBD9M%
 ```
 
 ## PwdHash2 Examples
 
 ```bash
-❯ ./pwdhash.py -v2 example.com
+❯ pwdhash -v2 example.com
 Exception: Please define 'PWDHASH2_SALT' environment variable, or specify --salt.
 ```
 PwdHash2 requires a Salt:
 
 ```bash
-❯ ./pwdhash.py -v2 example.com --salt ChangeMe
+❯ pwdhash -v2 example.com --salt ChangeMe
 Exception: Please define 'PWDHASH2_ITERATIONS' environment variable, or specify --iterations.
 ```
 and a number of iterations:
 ```bash
-❯ ./pwdhash.py -v2 example.com --salt ChangeMe --iterations 50000
+❯ pwdhash -v2 example.com --salt ChangeMe --iterations 50000
 Password:
 7qErBOIB6R
-❯ ./pwdhash.py -v2 example.com --salt ChangeMe --iterations 50000 --stdin < password
+❯ pwdhash -v2 example.com --salt ChangeMe --iterations 50000 --stdin < password
 7qErBOIB6R
 ```
 
@@ -101,14 +109,14 @@ Password:
 Salt and Iterations can also be specified as *environment variables*:
 
 ```bash
-❯ PWDHASH2_SALT=ChangeMe PWDHASH2_ITERATIONS=50000 ./pwdhash.py -v2 example.com --stdin < password
+❯ PWDHASH2_SALT=ChangeMe PWDHASH2_ITERATIONS=50000 pwdhash -v2 example.com --stdin < password
 7qErBOIB6R
 ```
 
 If you define those variables inside your `.bashrc` or `.zshrc`, you don't need to specify them anymore:
 
 ```bash
-❯ ./pwdhash.py -v2 example.com --stdin < password
+❯ pwdhash -v2 example.com --stdin < password
 7qErBOIB6R
 ```
 
