@@ -2,6 +2,7 @@ import unittest
 from contextlib import redirect_stdout
 from io import StringIO
 from unittest.mock import patch
+import pexpect
 
 import pwdhash
 
@@ -126,15 +127,30 @@ class TestPwdHashCLI(unittest.TestCase):
         try:
             import pyperclip
             try:
+                before = pyperclip.paste()
                 pyperclip.copy('wrong')
             except pyperclip.PyperclipException:
                 self.skipTest('pyperclip cannot copy to clipboard.')
             self.assertEqual(self.call_cli(
                 '--stdin', '-c', 'google.com', stdin='12345'), '')
             self.assertEqual(pyperclip.paste(), 'lVOiR3j')
+            pyperclip.copy(before)
         except ImportError:
             self.skipTest('pyperclip not available.')
 
+class TestInteractivePwdHash(unittest.TestCase):
+    def test_input_password(self):
+        child = pexpect.spawn('python pwdhash.py example.com')
+        child.expect('Password: ')
+        child.sendline('p4ssw0rd')
+        # https://pexpect.readthedocs.io/en/stable/overview.html#find-the-end-of-line-cr-lf-conventions
+        self.assertEqual(child.read(), b'\r\n4kydhtBD9M\r\n')
+
+    def test_input_password_no_newline(self):
+        child = pexpect.spawn('python pwdhash.py -n example.com')
+        child.expect('Password: ')
+        child.sendline('p4ssw0rd')
+        self.assertEqual(child.read(), b'\r\n4kydhtBD9M')
 
 if __name__ == '__main__':
     unittest.main()
