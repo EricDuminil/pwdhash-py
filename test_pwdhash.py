@@ -103,11 +103,11 @@ class TestPwdHash2(unittest.TestCase):
 
 
 class TestPwdHashCLI(unittest.TestCase):
-    def call_cli(self, *args, stdin):
+    def call_cli(self, *args, cli_func=pwdhash.v1_or_v2, stdin):
         fake_stdout = StringIO()
         with redirect_stdout(fake_stdout):
             with patch('sys.stdin', StringIO(stdin)):
-                pwdhash.v1_or_v2(args)
+                cli_func(args)
         return fake_stdout.getvalue()
 
     def test_cli_pwdhash(self):
@@ -116,6 +116,12 @@ class TestPwdHashCLI(unittest.TestCase):
         self.assertEqual(self.call_cli(
             '--stdin', '-n', 'google.com', stdin='test'), 'IeTLK1')
 
+    def test_pwdhash_v1_script(self):
+        # Equivalent to pwdhash script from pip package
+        self.assertEqual(self.call_cli(
+            '--stdin', 'https://maps.google.com', stdin='test', cli_func=pwdhash.v1), 'IeTLK1\n')
+        self.assertRaises(SystemExit, pwdhash.v1, ['-v1', 'test.com'])
+
     def test_cli_pwdhash2(self):
         self.assertEqual(self.call_cli(
             '--stdin', '-v', '2', '--iter', '1000', '--salt', 'ChangeMe', 'https://maps.google.com', stdin='foobar'),
@@ -123,6 +129,13 @@ class TestPwdHashCLI(unittest.TestCase):
         self.assertEqual(self.call_cli(
             '--stdin', '-v', '2', '--iter', '99_999', '--salt', 'SuperSalt', '-n', 'github.io', stdin='p4ssw0rd'),
             '43DV2JBzXL')
+
+    def test_pwdhash_v2_script(self):
+        # Equivalent to pwdhash2 script from pip package
+        self.assertEqual(self.call_cli(
+            '--stdin', '--iter', '1000', '--salt', 'ChangeMe', 'https://maps.google.com', cli_func=pwdhash.v2, stdin='foobar'),
+            'APC8mNJI\n')
+        self.assertRaises(SystemExit, pwdhash.v2, ['-v2', 'test.com'])
 
     def test_cli_pwdhash_to_clipboard(self):
         try:
