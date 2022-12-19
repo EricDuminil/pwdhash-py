@@ -107,7 +107,7 @@ class TestPwdHashCLI(unittest.TestCase):
         fake_stdout = StringIO()
         with redirect_stdout(fake_stdout):
             with patch('sys.stdin', StringIO(stdin)):
-                pwdhash.cli(args)
+                pwdhash.v1_or_v2(args)
         return fake_stdout.getvalue()
 
     def test_cli_pwdhash(self):
@@ -160,6 +160,13 @@ class TestInteractivePwdHash(unittest.TestCase):
         child.expect('Password: ')
         child.sendline('p4ssw0rd')
         self.assertEqual(child.read(), b'\r\n4kydhtBD9M')
+
+    def test_input_password_v2(self):
+        child = pexpect.spawn('python {0} -v2 --salt ChangeMe --iterations 50000 example.com'.format(TEST_DIR / 'pwdhash.py'))
+        child.expect('Password: ')
+        child.sendline('p4ssw0rd')
+        # https://pexpect.readthedocs.io/en/stable/overview.html#find-the-end-of-line-cr-lf-conventions
+        self.assertEqual(child.read(), b'\r\n7qErBOIB6R\r\n')
 
 if __name__ == '__main__':
     unittest.main()

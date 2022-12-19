@@ -127,28 +127,30 @@ def _check_iterations_and_salt(iterations, salt):
         raise Exception(
             'Please define {0!r} environment variable, or specify --iterations.'.format(PWDHASH2_ITERATIONS_ENV))
 
-
-def cli(cli_args):
-    parser = argparse.ArgumentParser(
-        description='Computes PwdHash1 or PwdHash2.')
-    parser.add_argument('domain', help='the domain or uri of the site')
-    parser.add_argument('-v', '--version', type=int,
-                        choices=[1, 2], default=1, help='Use PwdHash 1 or 2. Default is 1')
+def _args_parser(description):
+    parser = argparse.ArgumentParser(description=description)
     parser.add_argument('-s', '--stdin', action='store_true',
                         help='Get password from stdin instead of prompt. Default is prompt')
     parser.add_argument('-c', '--copy', action='store_true',
                         help='Copy hash to clipboard instead of displaying it. Default is display')
-    parser.add_argument('--salt', type=str, help='Salt (for PwdHash 2)',
-                        default=os.getenv(PWDHASH2_SALT_ENV))
-    parser.add_argument('--iterations', type=int, help='How many iterations (for PwdHash 2)',
-                        default=os.getenv(PWDHASH2_ITERATIONS_ENV))
     parser.add_argument('-n', action='store_true',
                         help='Do not print the trailing newline')
+    parser.add_argument('domain', help='the domain or uri of the site')
+    return parser
+
+def _add_v2_params(parser):
+    parser.add_argument('--salt', type=str, help='Salt',
+                        default=os.getenv(PWDHASH2_SALT_ENV))
+    parser.add_argument('--iterations', type=int, help='How many iterations',
+                        default=os.getenv(PWDHASH2_ITERATIONS_ENV))
+
+def _process(parser, cli_args, version=None):
     args = parser.parse_args(cli_args)
+    version = version or args.version
 
     domain = extract_domain(args.domain)
 
-    if args.version == 2:
+    if version == 2:
         _check_iterations_and_salt(args.iterations, args.salt)
 
     if args.stdin:
@@ -156,7 +158,7 @@ def cli(cli_args):
     else:
         password = getpass.getpass()
 
-    if args.version == 1:
+    if version == 1:
         result = pwdhash(domain, password)
     else:
         result = pwdhash2(domain, password, args.iterations, args.salt)
@@ -171,8 +173,27 @@ def cli(cli_args):
         print(result, end='' if args.n else '\n')
 
 
-def main():
-    cli(sys.argv[1:])
+def v1_or_v2(cli_args):
+    """Called from python pwdhash.py"""
+    parser = _args_parser('Computes PwdHash1 or PwdHash2')
+    parser.add_argument('-v', '--version', type=int,
+                        choices=[1, 2], default=1, help='Use PwdHash 1 or 2. Default is 1')
+    _add_v2_params(parser)
+    _process(parser, cli_args)
+
+
+def v1(cli_args=None):
+    """Called from pwdhash script, when installed as package"""
+    parser = _args_parser('Computes PwdHash1')
+    _process(parser, cli_args, 1)
+
+
+def v2(cli_args=None):
+    """Called from pwdhash2 script, when installed as package"""
+    parser = _args_parser('Computes PwdHash2')
+    parser.version = 2
+    _add_v2_params(parser)
+    _process(parser, cli_args, 2)
 
 if __name__ == '__main__':
-    main()
+    v1_or_v2(None)
