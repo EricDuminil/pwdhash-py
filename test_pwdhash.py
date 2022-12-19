@@ -132,9 +132,17 @@ class TestPwdHashCLI(unittest.TestCase):
                 pyperclip.copy('wrong')
             except pyperclip.PyperclipException:
                 self.skipTest('pyperclip cannot copy to clipboard.')
+
+            # Try with API
             self.assertEqual(self.call_cli(
                 '--stdin', '-c', 'google.com', stdin='12345'), '')
             self.assertEqual(pyperclip.paste(), 'lVOiR3j')
+
+            # Try with script
+            child = pexpect.spawn('python {0} -n --copy example.com'.format(TEST_DIR / 'pwdhash.py'))
+            child.expect('Password: ')
+            child.sendline('p4ssw0rd')
+            self.assertEqual(child.read(), b'\r\n')
             pyperclip.copy(before)
         except ImportError:
             self.skipTest('pyperclip not available.')
@@ -152,12 +160,6 @@ class TestInteractivePwdHash(unittest.TestCase):
         child.expect('Password: ')
         child.sendline('p4ssw0rd')
         self.assertEqual(child.read(), b'\r\n4kydhtBD9M')
-
-    def test_input_password_no_output(self):
-        child = pexpect.spawn('python {0} -n --copy example.com'.format(TEST_DIR / 'pwdhash.py'))
-        child.expect('Password: ')
-        child.sendline('p4ssw0rd')
-        self.assertEqual(child.read(), b'\r\n')
 
 if __name__ == '__main__':
     unittest.main()
