@@ -3,9 +3,10 @@ from contextlib import redirect_stdout
 from io import StringIO
 from unittest.mock import patch
 import pexpect
-
+from pathlib import Path
 import pwdhash
 
+TEST_DIR = Path(__file__).resolve().parent
 
 class TestPwdHash(unittest.TestCase):
     def test_empty_pwdhash(self):
@@ -140,14 +141,14 @@ class TestPwdHashCLI(unittest.TestCase):
 
 class TestInteractivePwdHash(unittest.TestCase):
     def test_input_password(self):
-        child = pexpect.spawn('python pwdhash.py example.com')
+        child = pexpect.spawn('python {0} example.com'.format(TEST_DIR / 'pwdhash.py'))
         child.expect('Password: ')
         child.sendline('p4ssw0rd')
         # https://pexpect.readthedocs.io/en/stable/overview.html#find-the-end-of-line-cr-lf-conventions
         self.assertEqual(child.read(), b'\r\n4kydhtBD9M\r\n')
 
     def test_input_password_no_newline(self):
-        child = pexpect.spawn('python pwdhash.py -n example.com')
+        child = pexpect.spawn('python {0} -n example.com'.format(TEST_DIR / 'pwdhash.py'))
         child.expect('Password: ')
         child.sendline('p4ssw0rd')
         self.assertEqual(child.read(), b'\r\n4kydhtBD9M')
