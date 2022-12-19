@@ -153,5 +153,11 @@ class TestInteractivePwdHash(unittest.TestCase):
         child.sendline('p4ssw0rd')
         self.assertEqual(child.read(), b'\r\n4kydhtBD9M')
 
+    def test_input_password_no_output(self):
+        child = pexpect.spawn('python {0} -n --copy example.com'.format(TEST_DIR / 'pwdhash.py'))
+        child.expect('Password: ')
+        child.sendline('p4ssw0rd')
+        self.assertEqual(child.read(), b'\r\n')
+
 if __name__ == '__main__':
     unittest.main()
