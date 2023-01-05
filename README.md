@@ -16,7 +16,7 @@ Once installed with pip, `pwdhash` and `pwdhash2` commands should be available i
 
 ```bash
 ❯ pwdhash -h
-usage: pwdhash [-h] [-s] [-c] [-n] domain
+usage: pwdhash [-h] [-s] [-t] [-c] [-n] domain
 
 Computes PwdHash1
 
@@ -26,6 +26,7 @@ positional arguments:
 optional arguments:
   -h, --help   show this help message and exit
   -s, --stdin  Get password from stdin instead of prompt. Default is prompt
+  -t, --twice  Ask password twice, and check both are the same. Default is once
   -c, --copy   Copy hash to clipboard instead of displaying it. Default is display
   -n           Do not print the trailing newline
 ```
@@ -33,7 +34,7 @@ optional arguments:
 
 ```bash
 ❯ pwdhash2 -h
-usage: pwdhash2 [-h] [-s] [-c] [-n] [--salt SALT] [--iterations ITERATIONS] domain
+usage: pwdhash2 [-h] [-s] [-t] [-c] [-n] [--salt SALT] [--iterations ITERATIONS] domain
 
 Computes PwdHash2
 
@@ -43,6 +44,7 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   -s, --stdin           Get password from stdin instead of prompt. Default is prompt
+  -t, --twice           Ask password twice, and check both are the same. Default is once
   -c, --copy            Copy hash to clipboard instead of displaying it. Default is display
   -n                    Do not print the trailing newline
   --salt SALT           Salt
