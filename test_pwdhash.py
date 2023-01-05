@@ -182,7 +182,7 @@ class TestInteractivePwdHash(unittest.TestCase):
         child.sendline('typo')
         child.expect('Enter password again:')
         child.sendline('typpo')
-        self.assertTrue("Exception: Passwords did not match." in child.read().decode('utf-8'))
+        self.assertTrue("ERROR: Passwords did not match." in child.read().decode('utf-8'))
 
     def test_input_password_no_newline(self):
         child = pexpect.spawn('python {0} -n example.com'.format(TEST_DIR / 'pwdhash.py'))

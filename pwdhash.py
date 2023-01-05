@@ -121,11 +121,9 @@ def pwdhash(domain, password):
 
 def _check_iterations_and_salt(iterations, salt):
     if salt is None:
-        raise Exception(
-            'Please define {0!r} environment variable, or specify --salt.'.format(PWDHASH2_SALT_ENV))
+        sys.exit('Please define {0!r} environment variable, or specify --salt.'.format(PWDHASH2_SALT_ENV))
     if iterations is None:
-        raise Exception(
-            'Please define {0!r} environment variable, or specify --iterations.'.format(PWDHASH2_ITERATIONS_ENV))
+        sys.exit('Please define {0!r} environment variable, or specify --iterations.'.format(PWDHASH2_ITERATIONS_ENV))
 
 def _args_parser(description):
     parser = argparse.ArgumentParser(description=description)
@@ -162,7 +160,7 @@ def _process(parser, cli_args, version=None):
         if args.twice:
             password2 = getpass.getpass('Enter password again:')
             if password != password2:
-                raise Exception('Passwords did not match.')
+                sys.exit('ERROR: Passwords did not match.')
 
     if version == 1:
         result = pwdhash(domain, password)
