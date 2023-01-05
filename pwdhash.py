@@ -131,6 +131,8 @@ def _args_parser(description):
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('-s', '--stdin', action='store_true',
                         help='Get password from stdin instead of prompt. Default is prompt')
+    parser.add_argument('-t', '--twice', action='store_true',
+                        help='Ask password twice, and check both are the same. Default is once')
     parser.add_argument('-c', '--copy', action='store_true',
                         help='Copy hash to clipboard instead of displaying it. Default is display')
     parser.add_argument('-n', action='store_true',
@@ -157,6 +159,10 @@ def _process(parser, cli_args, version=None):
         password = sys.stdin.readline().strip()
     else:
         password = getpass.getpass()
+        if args.twice:
+            password2 = getpass.getpass('Enter password again:')
+            if password != password2:
+                raise Exception('Passwords did not match.')
 
     if version == 1:
         result = pwdhash(domain, password)

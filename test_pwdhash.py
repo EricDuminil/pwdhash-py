@@ -168,6 +168,22 @@ class TestInteractivePwdHash(unittest.TestCase):
         # https://pexpect.readthedocs.io/en/stable/overview.html#find-the-end-of-line-cr-lf-conventions
         self.assertEqual(child.read(), b'\r\n4kydhtBD9M\r\n')
 
+    def test_input_password_twice(self):
+        child = pexpect.spawn('python {0} --twice example.com'.format(TEST_DIR / 'pwdhash.py'))
+        child.expect('Password: ')
+        child.sendline('p4ssw0rd')
+        child.expect('Enter password again:')
+        child.sendline('p4ssw0rd')
+        self.assertEqual(child.read(), b'\r\n4kydhtBD9M\r\n')
+
+    def test_input_password_not_the_same(self):
+        child = pexpect.spawn('python {0} --twice example.com'.format(TEST_DIR / 'pwdhash.py'))
+        child.expect('Password: ')
+        child.sendline('typo')
+        child.expect('Enter password again:')
+        child.sendline('typpo')
+        self.assertTrue("Exception: Passwords did not match." in child.read().decode('utf-8'))
+
     def test_input_password_no_newline(self):
         child = pexpect.spawn('python {0} -n example.com'.format(TEST_DIR / 'pwdhash.py'))
         child.expect('Password: ')
