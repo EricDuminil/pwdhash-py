@@ -4,6 +4,10 @@ This is a Python implementation of [*PwdHash*](http://pwdhash.com/) and [*PwdHas
 
 It is function-equivalent to the original *PwdHash* browser add-on, as well as the updated version.
 
+It does not require any dependency, and should work on any Python 3.4+.
+
+It includes many options, and should be easy to integrate into any workflow.
+
 ## Installation
 
 `pip install pwdhash`
@@ -58,7 +62,7 @@ If sources are available, the script can also be called with `python pwdhash.py`
 
 ```bash
 ❯ python pwdhash.py -h
-usage: pwdhash.py [-h] [-s] [-c] [-n] [-v {1,2}] [--salt SALT] [--iterations ITERATIONS] domain
+usage: pwdhash.py [-h] [-s] [-t] [-c] [-n] [-v {1,2}] [--salt SALT] [--iterations ITERATIONS] domain
 
 Computes PwdHash1 or PwdHash2
 
@@ -68,6 +72,7 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   -s, --stdin           Get password from stdin instead of prompt. Default is prompt
+  -t, --twice           Ask password twice, and check both are the same. Default is once
   -c, --copy            Copy hash to clipboard instead of displaying it. Default is display
   -n                    Do not print the trailing newline
   -v {1,2}, --version {1,2}
@@ -105,6 +110,26 @@ but it allows to get the password from a pipe or a file:
 ❯ cat password | pwdhash --stdin example.com
 4kydhtBD9M
 ❯ echo "p4ssw0rd" | pwdhash --stdin example.com
+4kydhtBD9M
+```
+
+###  `--twice`
+
+It's possible to ask for the password twice, in order to avoid typos:
+
+```
+❯ pwdhash --twice example.com
+Password:
+Enter password again:
+ERROR: Passwords did not match.
+```
+
+`pwdhash` returns as usual if both passwords match:
+
+```
+❯ pwdhash --twice example.com
+Password:
+Enter password again:
 4kydhtBD9M
 ```
 
